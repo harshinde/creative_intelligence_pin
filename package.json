@@ -1,0 +1,10 @@
+{
+  "name": "creative-intelligence-pin",
+  "version": "0.1.0",
+  "private": true,
+  "pnpm": {
+    "overrides": {
+      "rollup@<2.80.0": "2.80.0"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Creative Intelligence Pin",
+  "version": "1.2.0",
+  "description": "Hover over any image to analyze it and get AI-powered creative intelligence — color, composition, typography, mood, and visual style. Powered by Gemini.",
+  "author": "Creative Intelligence Pin",
+  "permissions": ["activeTab", "scripting", "storage", "alarms", "tabs", "sidePanel"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/index.ts"],
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ],
+  "action": {
+    "default_title": "Creative Intelligence Pin"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
