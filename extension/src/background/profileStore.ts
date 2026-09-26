@@ -79,6 +79,11 @@ export async function updateProfile(
       updates.confidence
         ? { ...existing.confidence, ...updates.confidence }
         : existing.confidence,
+    // Same for confidenceNotes — each stage contributes only its own keys.
+    confidenceNotes:
+      updates.confidenceNotes
+        ? { ...existing.confidenceNotes, ...updates.confidenceNotes }
+        : existing.confidenceNotes,
   };
 
   await chrome.storage.local.set({ [profileKey(id)]: merged });

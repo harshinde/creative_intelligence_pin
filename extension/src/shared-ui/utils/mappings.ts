@@ -147,3 +147,19 @@ export function confidenceToScore(level: ConfidenceLevel | null | undefined): nu
 export function confidenceToDots(score: number): number {
   return Math.max(0, Math.min(5, Math.round(score / 20)));
 }
+
+/** Token color name for a confidence level, used for per-section indicators. */
+export function confidenceLevelColor(
+  level: ConfidenceLevel | null | undefined,
+): 'success' | 'accent' | 'danger' | 'textFaint' {
+  switch (level) {
+    case 'high':
+      return 'success';
+    case 'medium':
+      return 'accent';
+    case 'low':
+      return 'danger';
+    default:
+      return 'textFaint';
+  }
+}

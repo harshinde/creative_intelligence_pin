@@ -522,6 +522,40 @@ export function formatProfileAsHtml(profile: PartialCreativeProfile): string {
   return parts.join('');
 }
 
+/**
+ * A short, scannable one-liner meant to sit directly under an image on a
+ * moodboard — descriptors joined by "·", then the palette hex codes.
+ * e.g. "SERENE · WARM · MINIMALIST · rule-of-thirds — #FF5733 #2C3E50 #A0B0C0"
+ * Falls back gracefully when sections are missing.
+ */
+export function formatProfileAsCaption(profile: PartialCreativeProfile): string {
+  const descriptors: string[] = [];
+
+  // "Loud" single-word descriptors get uppercased for scannability.
+  if (profile.mood?.primary) descriptors.push(profile.mood.primary.toUpperCase());
+  if (profile.color?.temperature) descriptors.push(profile.color.temperature.toUpperCase());
+
+  const aesthetic = profile.visualStyle?.aestheticMovements?.[0];
+  if (aesthetic) descriptors.push(aesthetic.toUpperCase());
+  else if (profile.visualStyle?.medium) {
+    descriptors.push(profile.visualStyle.medium.replace(/_/g, ' ').toUpperCase());
+  }
+
+  // Layout reads as a lowercase phrase (e.g. "rule-of-thirds"), left as-is.
+  if (profile.composition?.layoutArchetype) {
+    descriptors.push(profile.composition.layoutArchetype);
+  }
+
+  const head = descriptors.join(' · ');
+  const hexes = (profile.color?.palette ?? [])
+    .slice(0, 5)
+    .map((s) => s.hex)
+    .join(' ');
+
+  if (head && hexes) return `${head} — ${hexes}`;
+  return head || hexes || 'No analysis available';
+}
+
 export function formatProfileAsJSON(profile: PartialCreativeProfile): string {
   // Strip transient/UI-only fields. Truncate inline data URIs so JSON stays usable.
   // The `failedStages` field is part of the type but excluded from the export.

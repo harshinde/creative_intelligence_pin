@@ -20,6 +20,9 @@ The JSON must match this exact schema:
   },
   "confidence": {
     "graphicElements": "<one of: 'high' | 'medium' | 'low'>"
+  },
+  "confidenceNotes": {
+    "graphicElements": "<string | null — if graphicElements confidence is 'medium' or 'low', a concise (≤12 words) reason for the uncertainty; null if 'high'>"
   }
 }
 

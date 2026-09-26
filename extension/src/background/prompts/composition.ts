@@ -31,6 +31,9 @@ The JSON must match this exact schema:
   },
   "confidence": {
     "composition": "<one of: 'high' | 'medium' | 'low'>"
+  },
+  "confidenceNotes": {
+    "composition": "<string | null — if composition confidence is 'medium' or 'low', a concise (≤12 words) reason for the uncertainty; null if 'high'>"
   }
 }
 

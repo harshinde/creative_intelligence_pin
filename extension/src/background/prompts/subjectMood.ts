@@ -29,11 +29,16 @@ The JSON must match this exact schema:
     "subject": "<one of: 'high' | 'medium' | 'low'>",
     "mood": "<one of: 'high' | 'medium' | 'low'>",
     "overall": "<one of: 'high' | 'medium' | 'low'>"
+  },
+  "confidenceNotes": {
+    "subject": "<string | null — if subject confidence is 'medium' or 'low', a concise (≤12 words) reason for the uncertainty; otherwise null>",
+    "mood": "<string | null — if mood confidence is 'medium' or 'low', a concise (≤12 words) reason; otherwise null>"
   }
 }
 
 Rules:
 - If you cannot determine a field with reasonable confidence, set it to null.
+- confidenceNotes must be null for any section rated 'high'. Keep each note short and specific (what was ambiguous), not generic.
 - culturalSignals and secondary may be empty arrays [] if nothing is detected.
 - sensoryAssociations should contain 2-5 descriptors.
 - Be precise and specific — avoid generic descriptions.

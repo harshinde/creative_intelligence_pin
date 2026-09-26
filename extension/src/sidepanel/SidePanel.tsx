@@ -18,6 +18,7 @@ import {
   formatProfileAsText,
   formatProfileAsHtml,
   formatProfileAsJSON,
+  formatProfileAsCaption,
 } from '../shared-ui/utils/format';
 import { confidenceToScore } from '../shared-ui/utils/mappings';
 import {
@@ -280,6 +281,11 @@ export function SidePanel() {
     copyText(formatProfileAsJSON(profile), setCopyFeedback, '✓ JSON');
   }
 
+  function handleCopyCaption() {
+    if (!profile) return;
+    copyText(formatProfileAsCaption(profile), setCopyFeedback, '✓ caption');
+  }
+
   async function handleRetry() {
     if (!profile?.id) return;
     try {
@@ -372,6 +378,7 @@ export function SidePanel() {
               analyzing={!!isProcessing}
               progress={progress}
               statusLabel={currentStatusLabel}
+              regions={profile.composition?.detectedRegions}
             />
 
             {/* Design summary band — max-width 60ch keeps prose readable when
@@ -503,7 +510,10 @@ export function SidePanel() {
 
             <Footer
               confidenceScore={confidenceScore}
+              confidence={profile.confidence}
+              confidenceNotes={profile.confidenceNotes}
               onCopyBrief={handleCopyBrief}
+              onCopyCaption={handleCopyCaption}
               onCopyJSON={handleCopyJSON}
               feedback={copyFeedback}
               ready={!!isComplete || !!profile.designSummary}

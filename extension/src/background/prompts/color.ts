@@ -27,6 +27,9 @@ The JSON must match this exact schema:
   },
   "confidence": {
     "color": "<one of: 'high' | 'medium' | 'low'>"
+  },
+  "confidenceNotes": {
+    "color": "<string | null — if color confidence is 'medium' or 'low', a concise (≤12 words) reason for the uncertainty; null if 'high'>"
   }
 }
 

@@ -28,11 +28,17 @@ import type {
   TypographyProfile,
   GraphicElementsProfile,
   ConfidenceLevel,
+  ConfidenceNotes,
+  ConfidenceSection,
 } from '@shared/types';
 
 // ─────────────────────────────────────────
 // RESULT INTERFACES
 // ─────────────────────────────────────────
+
+// confidenceNotes is optional and untrusted (model may omit, null, or
+// over-fill it), so it's typed loosely here and sanitized via pickNotes().
+type RawNotes = Record<string, unknown> | undefined;
 
 interface SubjectMoodResult {
   subject: SubjectProfile;
@@ -42,31 +48,60 @@ interface SubjectMoodResult {
     mood: ConfidenceLevel;
     overall: ConfidenceLevel;
   };
+  confidenceNotes?: RawNotes;
 }
 
 interface ColorResult {
   color: ColorProfile;
   confidence: { color: ConfidenceLevel };
+  confidenceNotes?: RawNotes;
 }
 
 interface CompositionResult {
   composition: CompositionProfile;
   confidence: { composition: ConfidenceLevel };
+  confidenceNotes?: RawNotes;
 }
 
 interface VisualStyleResult {
   visualStyle: VisualStyleProfile;
   confidence: { visualStyle: ConfidenceLevel };
+  confidenceNotes?: RawNotes;
 }
 
 interface TypographyResult {
   typography: TypographyProfile | null;
   confidence: { typography: ConfidenceLevel | null };
+  confidenceNotes?: RawNotes;
 }
 
 interface GraphicElementsResult {
   graphicElements: GraphicElementsProfile;
   confidence: { graphicElements: ConfidenceLevel };
+  confidenceNotes?: RawNotes;
+}
+
+/**
+ * Extract clean per-section notes from an untrusted model response: keep only
+ * the requested keys whose value is a non-empty string, trimmed and length-
+ * capped. Returns undefined when there's nothing usable, so we never write an
+ * empty object. Defensive because notes are optional model output, not schema-
+ * validated like the confidence enums.
+ */
+function pickNotes(
+  raw: RawNotes,
+  keys: ConfidenceSection[],
+): ConfidenceNotes | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const out: ConfidenceNotes = {};
+  for (const key of keys) {
+    const val = (raw as Record<string, unknown>)[key];
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      if (trimmed) out[key] = trimmed.slice(0, 160);
+    }
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 // ─────────────────────────────────────────
@@ -232,6 +267,7 @@ export async function runSubjectMoodStage(profileId: string, ai: GoogleGenAI): P
       mood: parsed.confidence.mood,
       overall: parsed.confidence.overall,
     } as any,
+    confidenceNotes: pickNotes(parsed.confidenceNotes, ['subject', 'mood']),
   });
 }
 
@@ -256,6 +292,7 @@ export async function runColorStage(profileId: string, ai: GoogleGenAI): Promise
   await updateProfile(profileId, {
     color: parsed.color,
     confidence: { color: parsed.confidence.color } as any,
+    confidenceNotes: pickNotes(parsed.confidenceNotes, ['color']),
   });
 }
 
@@ -280,6 +317,7 @@ export async function runCompositionStage(profileId: string, ai: GoogleGenAI): P
   await updateProfile(profileId, {
     composition: parsed.composition,
     confidence: { composition: parsed.confidence.composition } as any,
+    confidenceNotes: pickNotes(parsed.confidenceNotes, ['composition']),
   });
 }
 
@@ -304,6 +342,7 @@ export async function runVisualStyleStage(profileId: string, ai: GoogleGenAI): P
   await updateProfile(profileId, {
     visualStyle: parsed.visualStyle,
     confidence: { visualStyle: parsed.confidence.visualStyle } as any,
+    confidenceNotes: pickNotes(parsed.confidenceNotes, ['visualStyle']),
   });
 }
 
@@ -338,6 +377,7 @@ export async function runTypographyStage(profileId: string, ai: GoogleGenAI): Pr
   await updateProfile(profileId, {
     typography: parsed.typography,
     confidence: { typography: parsed.confidence.typography } as any,
+    confidenceNotes: pickNotes(parsed.confidenceNotes, ['typography']),
   });
 }
 
@@ -365,6 +405,7 @@ export async function runGraphicElementsStage(
   await updateProfile(profileId, {
     graphicElements: parsed.graphicElements,
     confidence: { graphicElements: parsed.confidence.graphicElements } as any,
+    confidenceNotes: pickNotes(parsed.confidenceNotes, ['graphicElements']),
   });
 }
 

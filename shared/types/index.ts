@@ -161,6 +161,24 @@ export interface ConfidenceScores {
   overall: ConfidenceLevel;
 }
 
+/** Sections that carry an independent confidence level (excludes `overall`). */
+export type ConfidenceSection =
+  | 'subject'
+  | 'mood'
+  | 'color'
+  | 'composition'
+  | 'visualStyle'
+  | 'typography'
+  | 'graphicElements';
+
+/**
+ * Short human-readable notes explaining *why* a section was less than fully
+ * confident. Only populated for medium/low sections; kept separate from
+ * ConfidenceScores so the enum shape and merge logic stay untouched, and so
+ * profiles stored before this field existed remain valid.
+ */
+export type ConfidenceNotes = Partial<Record<ConfidenceSection, string>>;
+
 // ─────────────────────────────────────────
 // ROOT CREATIVE PROFILE
 // ─────────────────────────────────────────
@@ -181,6 +199,7 @@ export interface CreativeProfile {
   graphicElements: GraphicElementsProfile;
   designSummary: string;            // AI-generated one-paragraph design brief
   confidence: ConfidenceScores;
+  confidenceNotes?: ConfidenceNotes; // why a section was medium/low confidence
   failedStages?: string[];          // names of stages that failed (for retry UI)
 }
 

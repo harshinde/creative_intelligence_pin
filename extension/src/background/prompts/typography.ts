@@ -33,6 +33,9 @@ If text IS visible, the JSON must match this exact schema:
   },
   "confidence": {
     "typography": "<one of: 'high' | 'medium' | 'low'>"
+  },
+  "confidenceNotes": {
+    "typography": "<string | null — if typography confidence is 'medium' or 'low', a concise (≤12 words) reason for the uncertainty; null if 'high'>"
   }
 }
 
